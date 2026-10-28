@@ -1,6 +1,6 @@
 name: astrbot_plugin_corememory # 插件唯一识别名，以 astrbot_plugin_ 前缀开头
 display_name: 你们的记忆 # 用于展示的名字，可以是方便人类阅读的名字（需要版本 >= v4.5.0，低版本不会报错，请放心填写）
 desc: 让ta记住你们之间的点点滴滴、重要的事、不希望ta忘记的事，记住你们的故事剧情走向与整个故事。让ta成为一个活着的、鲜活的人。你也可以通过命令查看/更新/修改ta的日记、剧情框架与剧情总结等。 # 插件简短描述
-version: v5.0.0-group # 插件版本号。格式：v1.1.1 或者 v1.1
+version: v6.0.0-group # 插件版本号。格式：v1.1.1 或者 v1.1
 author: 菌菌自用 # 作者
 repo: https://github.com/ff302dq-cyber/corememory # 插件的仓库地址
