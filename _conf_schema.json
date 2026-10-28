@@ -1,0 +1,187 @@
+{
+    "memory_mode": {
+        "description": "默认记忆模式",
+        "type": "string",
+        "default": "session",
+        "options": ["session", "persona"],
+        "hint": "session=按会话隔离（默认），persona=按人格共享。此为新会话的默认值，每个角色可单独设置。"
+    },
+    "persona_memory_inject_mode": {
+        "description": "共享模式记忆注入策略",
+        "type": "string",
+        "default": "current_user",
+        "options": ["current_user", "whitelist", "all_users"],
+        "hint": "current_user=只注入当前用户的核心/锁定记忆，whitelist=注入白名单用户的记忆，all_users=注入所有用户的记忆（慎用，可能导致prompt过长）"
+    },
+    "persona_whitelist_users": {
+        "description": "共享模式记忆注入白名单",
+        "type": "string",
+        "default": "",
+        "hint": "当注入策略为whitelist时生效。填写用户ID，多个用英文逗号分隔。例如：user_123,user_456,user_789"
+    },
+    "persona_max_users_inject": {
+        "description": "共享模式最大注入用户数",
+        "type": "int",
+        "default": 5,
+        "hint": "当注入策略为all_users时，最多注入多少个用户的记忆，防止prompt过长。按最近活跃时间排序。"
+    },
+    "inject_chat_history": {
+        "description": "注入记忆插件对话记录",
+        "type": "bool",
+        "default": false,
+        "hint": "是否将插件记录的完整对话历史注入到contexts中（替代AstrBot自带的上下文功能，支持群聊互通，权重更高）"
+    },
+    "chat_history_rounds": {
+        "description": "注入对话轮数",
+        "type": "int",
+        "default": 20,
+        "hint": "注入最近多少轮对话（1轮=1条用户消息+1条AI回复）"
+    },
+    "summary_provider_id": {
+        "description": "记忆总结服务商",
+        "type": "string",
+        "_special": "select_provider",
+        "hint": "用于生成记忆总结和核心记忆的模型。建议使用跟当前聊天一致的模型，以保持感情的一致性。"
+    },
+    "backup_summary_provider_id": {
+        "description": "备用总结服务商",
+        "type": "string",
+        "_special": "select_provider",
+        "hint": "当主服务商连续失败时自动切换到此备用服务商。建议配置一个更稳定的模型作为后备。"
+    },
+    "embedding_provider_id": {
+        "description": "语义搜索服务商",
+        "type": "string",
+        "default": "",
+        "hint": "这是实现语义联想功能的核心，请务必选择一个可用的Embedding模型提供商。设置好后不能更换，否则数据会损坏。"
+    },
+    "injection_method": {
+        "description": "动态记忆注入位置",
+        "type": "string",
+        "default": "system_prompt",
+        "options": ["system_prompt", "user_message_before"],
+        "hint": "控制【记忆日志】和【剧情总结】的注入位置。核心记忆、锁定记忆、对话历史已默认注入到contexts（权重最高）。"
+    },
+    "long_term_memory_injection_method": {
+        "description": "长期记忆注入位置",
+        "type": "string",
+        "default": "contexts",
+        "options": ["contexts", "extra_user_content_parts", "system_prompt"],
+        "hint": "控制【剧情框架】【核心记忆】【锁定记忆】的注入位置。contexts=按历史对话注入且权重最高；extra_user_content_parts=作为本轮附加资料，更稳；system_prompt=追加到系统提示词。无论选择哪项都会过滤空内容。"
+    },
+    "history_inject_location": {
+        "description": "历史对话注入位置",
+        "type": "string",
+        "default": "contexts_end",
+        "options": ["contexts_end", "prompt", "both"],
+        "hint": "contexts_end=仅contexts末尾(推荐), prompt=仅system_prompt, both=两处都注入(最强但费token)"
+    },
+    "history_in_prompt_rounds": {
+        "description": "注入prompt的历史轮数",
+        "type": "int",
+        "default": 20,
+        "hint": "当历史注入位置包含prompt时，最近多少轮对话会放入system_prompt"
+    },
+    "auto_compress_framework": {
+        "description": "是否自动压缩剧情框架",
+        "type": "bool",
+        "default": true,
+        "hint": "当剧情框架超过指定字数时，自动调用AI进行压缩总结。"
+    },
+    "framework_compress_threshold": {
+        "description": "剧情框架压缩阈值(字数)",
+        "type": "int",
+        "default": 3000,
+        "hint": "剧情框架超过此字数时触发自动压缩。"
+    },
+    "summary_trigger_count": {
+        "description": "记忆总结条数",
+        "type": "int",
+        "default": 30,
+        "hint": "对话多少条后触发记忆总结（同时会累积更新剧情框架）。一来一回算两条。"
+    },
+    "recent_diary_injection_count": {
+        "description": "近期记忆注入条数",
+        "type": "int",
+        "default": 5,
+        "hint": "每次固定注入的、最新的记忆数量，用于保证对话的短期连贯性。"
+    },
+    "semantic_injection_count": {
+        "description": "语义记忆注入条数",
+        "type": "int",
+        "default": 3,
+        "hint": "根据当前对话，从海量历史记忆中搜索并注入最相关的几条。"
+    },
+    "semantic_similarity_threshold": {
+        "description": "语义搜索相似度阈值",
+        "type": "float",
+        "default": 0.5,
+        "hint": "一个0到1之间的小数。只有相似度高于此值的记忆才会被注入，以过滤无关内容。建议0.3-0.5"
+    },
+    "plot_summary_injection_count": {
+        "description": "剧情总结注入条数",
+        "type": "int",
+        "default": 5,
+        "hint": "每次注入最近几条剧情总结片段。"
+    },
+    "plot_summary_trigger_count": {
+        "description": "剧情总结触发轮数",
+        "type": "int",
+        "default": 150,
+        "hint": "对话多少轮后自动触发一次剧情总结。剧情总结是增量式的剧情片段记录。一来一回算1轮。"
+    },
+    "plot_summary_force_rounds": {
+        "description": "手动剧情总结强制轮数",
+        "type": "int",
+        "default": 50,
+        "hint": "当手动触发剧情总结且已经总结到最新时，强制总结最近多少轮对话（0=禁用强制总结）"
+    },
+    "show_summary_result": {
+        "description": "是否显示总结结果",
+        "type": "bool",
+        "default": false,
+        "hint": "开启后会在总结完成时发送结果消息"
+    },
+    "host_data_path": {
+        "description": "宿主机数据路径映射",
+        "type": "string",
+        "default": "",
+        "hint": "仅当OneBot部署在宿主机而AstrBot在Docker容器中时需要填写，填写宿主机上对应AstrBot数据目录的路径，用于文件发送。留空则不转换路径"
+    },
+    "web_port": {
+        "description": "Web管理界面端口",
+        "type": "int",
+        "default": 16130,
+        "hint": "Web管理界面的访问端口"
+    },
+    "web_password": {
+        "description": "Web管理界面密码",
+        "type": "string",
+        "default": "irisqiyuan",
+        "hint": "访问Web管理界面需要的密码"
+    },
+    "auto_cleanup_enabled": {
+        "description": "是否启用自动清理",
+        "type": "bool",
+        "default": false,
+        "hint": "【默认关闭】开启后会根据下方设置自动清理旧记忆"
+    },
+    "max_core_memory_history": {
+        "description": "核心记忆历史版本保留数量",
+        "type": "int",
+        "default": 100,
+        "hint": "保留多少份核心记忆的历史版本"
+    },
+    "max_diary_entries": {
+        "description": "记忆日志保留条数",
+        "type": "int",
+        "default": 1000,
+        "hint": "记忆日志最多保留多少条"
+    },
+    "max_plot_summaries": {
+        "description": "剧情总结保留条数",
+        "type": "int",
+        "default": 200,
+        "hint": "剧情总结最多保留多少条"
+    }
+}
